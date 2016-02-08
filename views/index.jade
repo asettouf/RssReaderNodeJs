@@ -1,11 +1,12 @@
 extends layout
 
 block content
-  h1#podtitle
-  p#desc Desc
-  #arrowup.arrow <<
-  #podcastContainer
-  #arrowdown.arrow >>
+  h1#podtitle Please wait
+  p#desc Please wait for the podcasts to load
+  #menu.list-group
+    #arrowup.arrow <<
+    #podcastContainer
+    #arrowdown.arrow >>
   #videoContainer
     video#stream(controls)
     #description

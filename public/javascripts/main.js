@@ -30,7 +30,10 @@ function MainHandler(){
       var there = that;
       $(document.body).keydown(function(event){
         var shouldLoadVideo = there.enableArrowListeners(event);
-        shouldLoadVideo ? there.loadVideo(): "";
+        if(shouldLoadVideo){
+          there.loadVideo();
+
+        }
       });
     });
   };
@@ -51,10 +54,13 @@ function MainHandler(){
    */
   this.enableArrowListeners = function(event){
     var shouldLoadVideo = false;
+    $("#pod" + this.currentPodcast).toggleClass("active");
     if(event.keyCode == 40 && this.currentPodcast <= this.maxPodcasts){
+      this.switchNextItems();
       this.currentPodcast++;
       shouldLoadVideo = true;
     } else if(event.keyCode == 38 && this.currentPodcast > 0){
+      this.switchPreviousItems();
       this.currentPodcast--;
       shouldLoadVideo = true;
     } else if(event.keyCode == 13){
@@ -62,23 +68,44 @@ function MainHandler(){
       this.isPlaying ? video.pause(): video.play();
       this.isPlaying = !this.isPlaying;
     }
+    $("#pod" + this.currentPodcast).toggleClass("active");
     return shouldLoadVideo;
   };
 
+this.switchNextItems = function(){
+  if(this.currentPodcast < this.maxPodcasts - this.maxCurrentPodcast){
+    $("#pod" + this.currentPodcast).toggle();
+    var nextId = this.currentPodcast + this.maxCurrentPodcast;
+    $("#pod" + nextId).toggle();
+  }
+};
+
+this.switchPreviousItems = function(){
+  if(this.currentPodcast > 0){
+    var lastId = this.currentPodcast + this.maxCurrentPodcast - 1;
+    $("#pod" + lastId).toggle();
+    var prevId = this.currentPodcast - 1;
+    $("#pod" + prevId).toggle();
+  }
+};
   /**
    * Create the podcast architecture
    */
   this.createPodcasts = function(){
     $("item").each(function(index){
       var id = 'pod' + index;
-      $("#podcastContainer").append("<div id=" + id + " class=pod data-src=" +
-        $(this).children("enclosure").attr("url") + "> Clip n° " + index + " " +
+      var idVid = index + 1;
+      $("#podcastContainer").append("<div id=" + id + " class='pod list-group-item' data-src=" +
+        $(this).children("enclosure").attr("url") + "> Clip n° " + idVid + " " +
         $(this).children("pubdate").html() + "<div class=podDesc>"
         + $(this).children("description").html() + "</div> <div class=podSummary>"
       + $(this).children("itunes\\:summary").html() + "</div></div>");
     });
     $(".pod").each(function(index){
-      if (index > 3){
+      if(index == 0){
+        $(this).toggleClass("active");
+      }
+      else if (index > 3){
         $(this).toggle();
       }
     });
