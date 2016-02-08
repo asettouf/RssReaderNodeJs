@@ -10,3 +10,11 @@ a {
 #content, .podDesc, .podSummary{
   display: none;
 }
+
+#arrowup{
+  visibility: hidden;
+}
+
+#stream, #videoContainer, #description{
+  width: 80%;
+}

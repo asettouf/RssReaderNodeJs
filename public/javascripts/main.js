@@ -3,22 +3,20 @@ $(document).ready(function(){
   main.init();
 });
 
-//TODO
-//Enclosure tag attr url contains url of the video/audio
-//Pull title of the podcasting: title tag
-//Pull publication date of the podcast: pubdate tag
-//Pull desc of podcast:description tag  and curr vid: itunes:summary
-function MainHandler(){
-  this.currentPodcast = 0;
-  this.maxCurrentPodcast = 4;
-  this.maxPodcasts = 0;
-  this.podTitle = "";
-  this.podDesc = "";
-  this.allPubDate = [];
-  this.allPodsDesc = [];
-  this.allPodsSummary = [];
-  this.allPodsLinks =[];
 
+function MainHandler(){
+  //@param  {Number} currentPodcast [Podcast in use]
+  this.currentPodcast = 0;
+  //@param  {Number} maxCurrentPodcast [Current number of Podcasts in list]
+  this.maxCurrentPodcast = 4;
+  //@param  {Number} maxPodcasts [Current max number of Podcasts available]
+  this.maxPodcasts = 0;
+  //@param  {Boolean} isPlaying [Shows if a podcast is being played]
+  this.isPlaying = false;
+
+/**
+ * Init function
+ */
   this.init=function(){
     this.getRSSFeed("http://localhost:3000/rss-retrieve/reliablesourcesaudio");
     var that = this;
@@ -28,12 +26,48 @@ function MainHandler(){
       that.fillHeadlines();
       that.maxPodcasts = $("item").length;
       that.createPodcasts();
+      that.loadVideo();
+      var there = that;
+      $(document.body).keydown(function(event){
+        var shouldLoadVideo = there.enableArrowListeners(event);
+        shouldLoadVideo ? there.loadVideo(): "";
+      });
     });
   };
 
+/**
+ * Load a video onto the stream tag
+ */
   this.loadVideo = function(){
+    var vidUrl = $("#pod" + this.currentPodcast).attr("data-src");
+    $("#stream").attr("src", vidUrl);
+    $("#description").html($("#pod" + this.currentPodcast +  " > .podSummary").html());
+  };
 
-  }
+  /**
+   * Allows to read arrow up, down and enter keys
+   * @param  {event} event [A key event]
+   * @return {boolean}  shouldLoadVideo     [If key is arrow up or down, video should be loaded]
+   */
+  this.enableArrowListeners = function(event){
+    var shouldLoadVideo = false;
+    if(event.keyCode == 40 && this.currentPodcast <= this.maxPodcasts){
+      this.currentPodcast++;
+      shouldLoadVideo = true;
+    } else if(event.keyCode == 38 && this.currentPodcast > 0){
+      this.currentPodcast--;
+      shouldLoadVideo = true;
+    } else if(event.keyCode == 13){
+      var video = document.getElementById("stream");
+      this.isPlaying ? video.pause(): video.play();
+      this.isPlaying = !this.isPlaying;
+    }
+    return shouldLoadVideo;
+  };
+
+  /**
+   * Create the podcast architecture
+   */
   this.createPodcasts = function(){
     $("item").each(function(index){
       var id = 'pod' + index;
@@ -50,12 +84,19 @@ function MainHandler(){
     });
   };
 
+  /**
+   * fill the big title and summary
+   */
   this.fillHeadlines = function(){
     this.maxPodcasts = $("item").length;
     $("#podtitle").html($("channel > title").html());
     $("#desc").html($("channel > description").html());
   };
 
+/**
+ * Read rss feed from given url onto localhost proxy
+ * @param  {string} rssurl [url of the rss feed to target]
+ */
   this.getRSSFeed = function(rssurl){
     var opts = {};
     opts["url"] = rssurl;
