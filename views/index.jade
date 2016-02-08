@@ -1,5 +1,12 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1#podtitle
+  p#desc Desc
+  #arrowup.arrow <<
+  #podcastContainer
+  #arrowdown.arrow >>
+  #videoContainer
+    video#stream(controls)
+    #description
+  #content

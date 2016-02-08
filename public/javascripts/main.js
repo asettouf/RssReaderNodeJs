@@ -13,6 +13,7 @@ function MainHandler(){
   this.maxCurrentPodcast = 4;
   this.maxPodcasts = 0;
   this.podTitle = "";
+  this.podDesc = "";
   this.allPubDate = [];
   this.allPodsDesc = [];
   this.allPodsSummary = [];
@@ -22,17 +23,37 @@ function MainHandler(){
     this.getRSSFeed("http://localhost:3000/rss-retrieve/reliablesourcesaudio");
     var that = this;
     $(document.body).on("rssdone", function(ev, data){
-      var there = that;
-      that.podTitle = $("channel > description").html();
+      ev.stopPropagation();
+      $("#content").html(data);
+      that.fillHeadlines();
       that.maxPodcasts = $("item").length;
-      $(document.body).html(data);
-      $("item").each(function(index){
-        there.allPubDate.push($(this).children("pubdate").html());
-        there.allPodsDesc.push($(this).children("itunes\\:summary").html());
-        there.allPodsSummary.push($(this).children("description").html());
-        there.allPodsLinks.push($(this).children("enclosure").attr("url"));
-      });
+      that.createPodcasts();
     });
+  };
+
+  this.loadVideo = function(){
+
+  }
+  this.createPodcasts = function(){
+    $("item").each(function(index){
+      var id = 'pod' + index;
+      $("#podcastContainer").append("<div id=" + id + " class=pod data-src=" +
+        $(this).children("enclosure").attr("url") + "> Clip n° " + index + " " +
+        $(this).children("pubdate").html() + "<div class=podDesc>"
+        + $(this).children("description").html() + "</div> <div class=podSummary>"
+      + $(this).children("itunes\\:summary").html() + "</div></div>");
+    });
+    $(".pod").each(function(index){
+      if (index > 3){
+        $(this).toggle();
+      }
+    });
+  };
+
+  this.fillHeadlines = function(){
+    this.maxPodcasts = $("item").length;
+    $("#podtitle").html($("channel > title").html());
+    $("#desc").html($("channel > description").html());
   };
 
   this.getRSSFeed = function(rssurl){
