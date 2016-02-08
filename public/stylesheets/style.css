@@ -1,6 +1,7 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  overflow: hidden;
 }
 
 a {
@@ -11,10 +12,28 @@ a {
   display: none;
 }
 
-#arrowup{
+.noshow{
   visibility: hidden;
 }
 
+.arrow{
+  margin-left: 50%;
+}
+
+#videoContainer{
+  position: absolute;
+  top: 27%;
+  left: 300px;
+}
+
+#menu{
+  position: absolute;
+  top: 29%;
+}
 #stream, #videoContainer, #description{
-  width: 80%;
+  width: 74%;
+}
+
+#podcastContainer, #menu, .arrow{
+  width: 200px;
 }

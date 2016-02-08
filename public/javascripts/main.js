@@ -28,11 +28,10 @@ function MainHandler(){
       that.createPodcasts();
       that.loadVideo();
       var there = that;
-      $(document.body).keydown(function(event){
+      $(document.body).keyup(function(event){
         var shouldLoadVideo = there.enableArrowListeners(event);
         if(shouldLoadVideo){
           there.loadVideo();
-
         }
       });
     });
@@ -55,13 +54,17 @@ function MainHandler(){
   this.enableArrowListeners = function(event){
     var shouldLoadVideo = false;
     $("#pod" + this.currentPodcast).toggleClass("active");
-    if(event.keyCode == 40 && this.currentPodcast <= this.maxPodcasts){
+    if(event.keyCode == 40 && this.currentPodcast < this.maxPodcasts - 1){
       this.switchNextItems();
+      this.currentPodcast == 0 ? $("#arrowup").toggleClass("noshow") : "";
       this.currentPodcast++;
+      this.currentPodcast == this.maxPodcasts -1 ? $("#arrowdown").toggleClass("noshow") : "";
       shouldLoadVideo = true;
     } else if(event.keyCode == 38 && this.currentPodcast > 0){
       this.switchPreviousItems();
+      this.currentPodcast == this.maxPodcasts - 1 ? $("#arrowdown").toggleClass("noshow") : "";
       this.currentPodcast--;
+      this.currentPodcast == 0 ? $("#arrowup").toggleClass("noshow") : "";
       shouldLoadVideo = true;
     } else if(event.keyCode == 13){
       var video = document.getElementById("stream");
@@ -72,6 +75,7 @@ function MainHandler(){
     return shouldLoadVideo;
   };
 
+
 this.switchNextItems = function(){
   if(this.currentPodcast < this.maxPodcasts - this.maxCurrentPodcast){
     $("#pod" + this.currentPodcast).toggle();
@@ -81,12 +85,13 @@ this.switchNextItems = function(){
 };
 
 this.switchPreviousItems = function(){
-  if(this.currentPodcast > 0){
+  if(this.currentPodcast <=  this.maxPodcasts - this.maxCurrentPodcast ){
     var lastId = this.currentPodcast + this.maxCurrentPodcast - 1;
     $("#pod" + lastId).toggle();
     var prevId = this.currentPodcast - 1;
     $("#pod" + prevId).toggle();
   }
+
 };
   /**
    * Create the podcast architecture
